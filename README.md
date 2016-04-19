@@ -1,6 +1,8 @@
 PyRDW
 =====
 
+Supports Python 2.6, 2.7, 3.3, 3.4 and 3.5
+
 PyRDW gives a basic way of fetching licensenumber-data from the RDW, the dutch department of road transport.
 Keys in data returned (by the RDW) are in dutch, unfortunately.
 

@@ -1,9 +1,16 @@
 #!/usr/bin/env python
 import json
-import sys
-import os
 import re
-import urllib2
+
+from sys import version_info
+
+if version_info < (3, 0):
+    from urllib2 import HTTPError, URLError
+    from urllib2 import urlopen
+else:
+    import ssl
+    from urllib.error import HTTPError, URLError
+    from urllib.request import urlopen
 
 
 class NoLicenseNumber(Exception):
@@ -75,7 +82,7 @@ class LicenseNumber(object):
         return True
 
     def __get_type(self):
-        for _key, _regex in self.REGEXES.iteritems():
+        for _key, _regex in self.REGEXES.items():
             match = re.match(_regex, self.stripped)
             if match is not None:
                 return _key
@@ -106,15 +113,17 @@ class LicenseNumber(object):
             raise InvalidLicenseNumber()
 
         try:
-            response = urllib2.urlopen(
-                os.path.join(self.RDW_URL % (self.stripped,))
-            )
-        except urllib2.HTTPError, error:
+            if version_info < (3, 4):
+                response = urlopen(self.RDW_URL % self.stripped)
+            else:
+                gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+                response = urlopen(self.RDW_URL % self.stripped,
+                    context=gcontext)
+        except HTTPError as error:
             if error.code == 404:
                 raise NoLicenseNumberDataFound()
             raise
-
-        except urllib2.URLError:
+        except URLError:
             # probably a connection refused error
             raise
 
@@ -124,14 +133,15 @@ class LicenseNumber(object):
         if 'json' not in response.info()['content-type']:
             raise UnexpectedResponse()
 
-        raw_response = response.read()
+        raw_response = response.read().decode("utf-8")
         _results = json.loads(raw_response)
         self._data = _results['d']
 
 
 if __name__ == "__main__":
+    from sys import argv
     try:
-        license_number = LicenseNumber(sys.argv[1])
-        print license_number.data
+        license_number = LicenseNumber(argv[1])
+        print(license_number.data)
     except IndexError:
         raise NoLicenseNumber()
