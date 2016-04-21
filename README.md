@@ -39,4 +39,6 @@ u'458'
 
 ###Version-history
 
-1.0b - Basic functionality with license_number validation and an RDW call.
+1.1 - 2016-04-21 - Added Python 3 support;
+1.0 - 2014-12-23 - Release;
+1.0b - 2014-12-23 - Basic functionality with license_number validation and an RDW call.

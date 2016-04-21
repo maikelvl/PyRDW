@@ -7,7 +7,7 @@ def readme():
 
 setup(
     name='PyRDW',
-    version='1.0',
+    version='1.1',
     description='PyRDW gives a basic way of fetching licensenumber-data from the RDW, the dutch department of road transport.',
     long_description=readme(),
     url='http://github.com/rense/pyrdw',
